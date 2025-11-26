@@ -22,7 +22,6 @@ env:
   NODE_VERSION: "20.x"
 
 jobs:
-  # Job 1: Build Frontend
   build-frontend:
     name: Build Frontend
     runs-on: ubuntu-latest
@@ -54,7 +53,6 @@ jobs:
           name: frontend-production-build
           path: client/dist
 
-  # Job 2: Deploy to GitHub Pages (Production)
   deploy-production:
     name: Deploy to GitHub Pages
     runs-on: ubuntu-latest
@@ -72,13 +70,11 @@ jobs:
           path: ./dist
 
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
+        uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist
-          cname: # Optional: Add custom domain here if you have one
 
-  # Job 3: Deployment Summary
   deployment-summary:
     name: Deployment Summary
     runs-on: ubuntu-latest
