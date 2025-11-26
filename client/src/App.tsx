@@ -12,7 +12,7 @@ import {AuthProvider} from "./context/AuthContext.tsx";
 export function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
+      <BrowserRouter basename="/rec-movie">
         <Toaster />
         <Routes>
           <Route path="/" element={<Login />} />
