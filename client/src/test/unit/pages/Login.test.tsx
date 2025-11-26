@@ -1,5 +1,5 @@
 // src/test/unit/pages/Login.test.tsx
-import {render, screen, fireEvent, waitFor, act} from "@testing-library/react";
+import {render, screen, fireEvent, waitFor} from "@testing-library/react";
 import {describe, it, beforeEach, expect, vi} from "vitest";
 import {App} from "@/App";
 import {mockAuth} from "@/test/setup";
@@ -10,8 +10,6 @@ describe("Login Page", () => {
     render(<App />);
     vi.clearAllMocks();
   });
-
-  const renderLogin = () => render(<App />);
 
   it("renders the login form", () => {
     expect(screen.getByPlaceholderText(/your@email.com/i)).toBeInTheDocument();

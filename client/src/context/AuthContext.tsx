@@ -1,7 +1,7 @@
 import {createContext, useContext, useEffect, useState, ReactNode} from "react";
 import {onAuthStateChanged, signOut, User} from "firebase/auth";
 import {auth} from "@/lib/firebase";
-
+/* eslint-disable react-refresh/only-export-components */
 interface AuthContextType {
   user: User | null;
   loading: boolean;

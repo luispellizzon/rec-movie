@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {
@@ -8,8 +9,6 @@ import {
 import Navbar from "@/components/NavBar";
 import {Loading} from "@/components/Loading";
 import {toast} from "sonner";
-
-type MoodOptionMode = "choose" | "describe";
 
 const genreOptions = [
   "Action",
@@ -52,8 +51,6 @@ export const Preferences: React.FC = () => {
   const [genres, setGenres] = useState<string[]>([]);
   const [movieCount, setMovieCount] = useState<string>("5");
   const [errors, setErrors] = useState<PreferencesErrors>({});
-  const [errorMsg, setErrorMsg] = useState<string>("");
-
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const toggleGenre = (genre: string) => {
@@ -132,7 +129,6 @@ export const Preferences: React.FC = () => {
 
       if (result.recommended_movies.length == 0) {
         setIsLoading(false);
-        setErrorMsg("Unable to retrieve movies according to your preferences");
         toast.error(
           "Unable to retrieve movies according to your preferences 😞",
           {
@@ -146,7 +142,6 @@ export const Preferences: React.FC = () => {
         );
       } else {
         setIsLoading(false);
-        setErrorMsg("");
         // Pass API results to Results page
         navigate("/results", {
           state: {
@@ -165,7 +160,7 @@ export const Preferences: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50">
+    <div className="min-h-screen bg-linear-to-br from-purple-50 via-pink-50 to-blue-50">
       <Navbar />
       {/* Main Content */}
       <main className="max-w-3xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
@@ -699,7 +694,7 @@ export const Preferences: React.FC = () => {
             <button
               type="button"
               onClick={handleGetRecommendations}
-              className="w-full bg-gray-900 text-white py-4 rounded-xl font-semibold hover:bg-gray-800 transition-colors shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
+              className="w-full bg-gray-900 text-white py-4 rounded-xl font-semibold hover:bg-gray-800 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
             >
               Get Recommendations
             </button>

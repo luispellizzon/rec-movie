@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import {useLocation, useNavigate} from "react-router-dom";
+import {useLocation} from "react-router-dom";
 import Navbar from "@/components/NavBar";
 import {Button} from "@/components/ui/button";
 import {
@@ -40,7 +40,6 @@ type MovieResponse = {
 };
 const Results = () => {
   const location = useLocation();
-  const navigate = useNavigate();
   const {user} = useAuth();
   const [viewMode, setViewMode] = useState<ViewMode>("cards");
   const [isSaving, setIsSaving] = useState(false);

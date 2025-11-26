@@ -1,7 +1,9 @@
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { expect, afterEach, vi } from "vitest";
 import { cleanup } from "@testing-library/react";
 import * as matchers from "@testing-library/jest-dom/matchers";
-import React from "react";
 
 // Add jest-dom matchers
 expect.extend(matchers);
@@ -10,21 +12,6 @@ expect.extend(matchers);
 afterEach(() => {
   cleanup();
 });
-
-// vi.mock("sonner", () => ({
-//   toast: {
-//     success: vi.fn(),
-//     error: vi.fn(),
-//   },
-//   // The actual lib exports a <Sonner /> component
-//   Sonner: () => React.createElement("div", { "data-testid": "sonner-root" }),
-// }));
-
-// // 2️⃣ Mock your *local* wrapper "src/components/ui/sonner"
-// vi.mock("@/components/ui/sonner", () => ({
-//   Toaster: () =>
-//     React.createElement("div", { "data-testid": "toaster-wrapper" }),
-// }));
 
 
 /* --------------------------------------------------
@@ -81,7 +68,7 @@ export const mockUpdateProfile = vi.fn(async (user, data) => {
 
 let mockOnAuthStateChangedCallback: any = null;
 
-export const mockOnAuthStateChanged = vi.fn((auth, cb) => {
+export const mockOnAuthStateChanged = vi.fn((_auth, cb) => {
   mockOnAuthStateChangedCallback = cb;
   if (mockAuth._user) cb(mockAuth._user);
   return () => { };

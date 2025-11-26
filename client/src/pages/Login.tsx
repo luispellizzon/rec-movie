@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {useState} from "react";
 import {useLocation, useNavigate, Link} from "react-router-dom";
 import {
@@ -40,7 +41,7 @@ const Login = () => {
     setErrors((prev) => ({...prev, [name]: undefined}));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setErrors({});
 
