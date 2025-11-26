@@ -8,11 +8,11 @@ import Dashboard from "./pages/Dashboard";
 import Results from "./pages/Results";
 import {BrowserRouter} from "react-router-dom";
 import {AuthProvider} from "./context/AuthContext.tsx";
-
+const basename = import.meta.env.BASE_URL;
 export function App() {
   return (
     <AuthProvider>
-      <BrowserRouter basename="/rec-movie">
+      <BrowserRouter basename={basename}>
         <Toaster />
         <Routes>
           <Route path="/" element={<Login />} />

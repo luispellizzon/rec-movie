@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">76.11% </span>
+                <span class="strong">76.56% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>51/67</span>
+                <span class='fraction'>49/64</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">77.77% </span>
+                <span class="strong">78.33% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>49/63</span>
+                <span class='fraction'>47/60</span>
             </div>
         
             
@@ -769,13 +769,7 @@
 <a name='L704'></a><a href='#L704'>704</a>
 <a name='L705'></a><a href='#L705'>705</a>
 <a name='L706'></a><a href='#L706'>706</a>
-<a name='L707'></a><a href='#L707'>707</a>
-<a name='L708'></a><a href='#L708'>708</a>
-<a name='L709'></a><a href='#L709'>709</a>
-<a name='L710'></a><a href='#L710'>710</a>
-<a name='L711'></a><a href='#L711'>711</a>
-<a name='L712'></a><a href='#L712'>712</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L707'></a><a href='#L707'>707</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -831,8 +825,6 @@
 <span class="cline-any cline-yes">13x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">13x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">13x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -909,7 +901,6 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -921,7 +912,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
@@ -1485,7 +1475,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import {useState} from "react";
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/* eslint-disable @typescript-eslint/no-explicit-any */
+import {useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {
   PreferencesFormData,
@@ -1495,8 +1486,6 @@ import {
 import Navbar from "@/components/NavBar";
 import {Loading} from "@/components/Loading";
 import {toast} from "sonner";
-&nbsp;
-type MoodOptionMode = "choose" | "describe";
 &nbsp;
 const genreOptions = [
   "Action",
@@ -1539,8 +1528,6 @@ export const Preferences: React.FC = () =&gt; {
   const [genres, setGenres] = useState&lt;string[]&gt;([]);
   const [movieCount, setMovieCount] = useState&lt;string&gt;("5");
   const [errors, setErrors] = useState&lt;PreferencesErrors&gt;({});
-  const [errorMsg, setErrorMsg] = useState&lt;string&gt;("");
-&nbsp;
   const [isLoading, setIsLoading] = useState&lt;boolean&gt;(false);
 &nbsp;
   const toggleGenre = (genre: string) =&gt; {
@@ -1619,7 +1606,6 @@ export const Preferences: React.FC = () =&gt; {
 &nbsp;
       <span class="missing-if-branch" title="if path not taken" >I</span>if (result.recommended_movies.length == 0) {
 <span class="cstat-no" title="statement not covered" >        setIsLoading(false);</span>
-<span class="cstat-no" title="statement not covered" >        setErrorMsg("Unable to retrieve movies according to your preferences");</span>
 <span class="cstat-no" title="statement not covered" >        toast.error(</span>
           "Unable to retrieve movies according to your preferences 😞",
           {
@@ -1633,7 +1619,6 @@ export const Preferences: React.FC = () =&gt; {
         );
       } else {
         setIsLoading(false);
-        setErrorMsg("");
         // Pass API results to Results page
         navigate("/results", {
           state: {
@@ -1652,7 +1637,7 @@ export const Preferences: React.FC = () =&gt; {
   }
 &nbsp;
   return (
-    &lt;div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50"&gt;
+    &lt;div className="min-h-screen bg-linear-to-br from-purple-50 via-pink-50 to-blue-50"&gt;
       &lt;Navbar /&gt;
       {/* Main Content */}
       &lt;main className="max-w-3xl mx-auto px-4 py-8 sm:px-6 lg:px-8"&gt;
@@ -2186,7 +2171,7 @@ export const Preferences: React.FC = () =&gt; {
             &lt;button
               type="button"
               onClick={handleGetRecommendations}
-              className="w-full bg-gray-900 text-white py-4 rounded-xl font-semibold hover:bg-gray-800 transition-colors shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
+              className="w-full bg-gray-900 text-white py-4 rounded-xl font-semibold hover:bg-gray-800 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
             &gt;
               Get Recommendations
             &lt;/button&gt;
@@ -2203,7 +2188,7 @@ export const Preferences: React.FC = () =&gt; {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-11-26T21:17:10.092Z
+                at 2025-11-26T22:13:42.021Z
             </div>
         <script src="../../prettify.js"></script>
         <script>
