@@ -134,6 +134,9 @@ def recommend_movies(request_json, previous_ids=None):
 
         print("Sending to AI for ranking...")
         ai_response = llm.invoke(ai_prompt).content
+        
+        print(f"AI RESPONSE -> returned: {ai_response}")
+        
         ids = get_ids(ai_response)
 
         print(f"AI RESPONSE -> returned: {ids}")
