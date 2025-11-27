@@ -3,3 +3,4 @@ langchain-google-genai>=0.1.8
 protobuf
 fastapi
 uvicorn
+python-dotenv
