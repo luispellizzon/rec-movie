@@ -294,8 +294,10 @@ const Results = () => {
 
           {/* Overlay */}
           {isLoading && (
-            <div className="absolute inset-0 flex items-center justify-center bg-white/40 backdrop-blur-sm z-50">
-              <LoadingBox />
+            <div className="absolute inset-0 flex justify-center pt-10 bg-white/40 backdrop-blur-sm z-50">
+              <div>
+                <LoadingBox />
+              </div>
             </div>
           )}
         </div>

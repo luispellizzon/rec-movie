@@ -7,6 +7,7 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from dotenv import load_dotenv
 from filter_utils import filter_dataframe
 from sql_utils import build_sql_query
+import gc
 
 load_dotenv()
 
@@ -71,7 +72,15 @@ def ids_to_json(ids, filtered_data):
 # -------------------------------------------------------------------------
 # MAIN RECOMMENDER LOGIC
 # -------------------------------------------------------------------------
+
 def recommend_movies(request_json, previous_ids=None):
+    conn = sqlite3.connect(DB_PATH, check_same_thread=False)
+    data_chunk = None
+    filtered_data = None
+    matching_movies = None
+    ids = None
+    result = None
+
     try:
         mood = request_json.get("mood")
         preferred_length = request_json.get("preferred_length")
@@ -89,6 +98,7 @@ def recommend_movies(request_json, previous_ids=None):
         print(f"📊 SQL query...")
         data_chunk = pd.read_sql_query(query, conn, params=params)
 
+        # Required dtype conversions
         data_chunk["genres"] = data_chunk["genres"].astype(object)
         data_chunk["production_countries"] = data_chunk["production_countries"].astype(object)
 
@@ -109,27 +119,23 @@ def recommend_movies(request_json, previous_ids=None):
         matching_text = (matching_movies['id'].astype(str) + " - " +
                          matching_movies["overview"]).str.cat(sep="\n")
 
-            # AI ranking prompt
+        # AI ranking prompt
         ai_prompt = (
             f"It is your job to rank movies from most recommended to least. You will be supplied a list of movie "
             f"IDs and descriptions, you must choose the best matching {number_recommended} movies by ID for the "
             f"user and send them rank from most recommended to least.\n"
-            f"to choose the best matching {number_recommended} of them to rank to the user.\n\n"
-            f"STRICTLY NECESSARY, MUST FOLLOW THESE RULES:\n"
+            f"STRICT RULES:\n"
             f"Output exactly {number_recommended} movies\n"
-            f"Output ONLY movie IDs\n"
-            f"NO text. NO explanations\n"
-            f"You MUST ONLY choose movie IDs from the list supplied below\n"
-            f"You MUST format each line EXACTLY as just containing the movie ID, NOTHING else\n"
-            f"You MUST send back the movie ID with the EXACT same as is specified.\n"
-            f"\nUser Preferences:\n{json.dumps(request_json, indent=2)}"
+            f"Output ONLY movie IDs, no text\n"
+            f"Choose ONLY from provided list\n\n"
+            f"User Preferences:\n{json.dumps(request_json, indent=2)}"
             f"\nMovies List:\n{matching_text}"
         )
-    
-        print("Sending to AI for ranking...")
 
-        result = llm.invoke(ai_prompt).content
-        ids = get_ids(result)
+        print("Sending to AI for ranking...")
+        ai_response = llm.invoke(ai_prompt).content
+        ids = get_ids(ai_response)
+
         print(f"  AI returned: {ids}")
 
         result = ids_to_json(ids, matching_movies)
@@ -143,6 +149,34 @@ def recommend_movies(request_json, previous_ids=None):
         traceback.print_exc()
         return {"error": str(e), "recommended_movies": []}
 
+    finally:
+
+        try:
+            conn.close()
+        except:
+            pass
+
+        try:
+            del data_chunk
+        except:
+            pass
+
+        try:
+            del filtered_data
+        except:
+            pass
+
+        try:
+            del matching_movies
+        except:
+            pass
+
+        try:
+            del ids
+        except:
+            pass
+
+        gc.collect()
 
 # -------------------------------------------------------------------------
 # Quick test
