@@ -32,7 +32,7 @@ llm = ChatGoogleGenerativeAI(
 
 def get_ids(response: str):
     ids = []
-    for line in response.split("\n"):
+    for line in response.split(" "):
         line = line.strip()
         if line:
             try:
