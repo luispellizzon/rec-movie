@@ -91,7 +91,7 @@ def recommend_movies(request_json, previous_ids=None):
         selected_genres = request_json.get("selected_genres")
         number_recommended = request_json.get("number_recommended", 3)
 
-        print(f"\REQUEST->  mood={mood}, genres={selected_genres}, length={preferred_length}")
+        print(f"REQUEST->  mood={mood}, genres={selected_genres}, length={preferred_length}")
 
         query, params = build_sql_query(preferred_length, language, era, previous_ids)
 
