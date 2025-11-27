@@ -21,7 +21,7 @@ if not os.path.exists(DB_PATH):
 
 print("Connecting to database...")
 conn = sqlite3.connect(DB_PATH, check_same_thread=False)
-print("✅ Database connected!")
+print("DB -> Database connected!")
 
 llm = ChatGoogleGenerativeAI(
     model="gemini-2.0-flash-lite",
@@ -91,11 +91,11 @@ def recommend_movies(request_json, previous_ids=None):
         selected_genres = request_json.get("selected_genres")
         number_recommended = request_json.get("number_recommended", 3)
 
-        print(f"\n🎬 Request: mood={mood}, genres={selected_genres}, length={preferred_length}")
+        print(f"\REQUEST->  mood={mood}, genres={selected_genres}, length={preferred_length}")
 
         query, params = build_sql_query(preferred_length, language, era, previous_ids)
 
-        print(f"📊 SQL query...")
+        print(f"SQL -> SQL query...")
         data_chunk = pd.read_sql_query(query, conn, params=params)
 
         # Required dtype conversions
@@ -107,14 +107,14 @@ def recommend_movies(request_json, previous_ids=None):
         if data_chunk.empty:
             return {"error": "No matching movies.", "recommended_movies": []}
 
-        print(f"🎯 Python filtering...")
+        print(f"FILTERING -> Python filtering...")
         filtered_data = filter_dataframe(data_chunk, mood, mainstream, selected_genres, country)
 
         if filtered_data.empty:
             return {"error": "No matching movies.", "recommended_movies": []}
 
         matching_movies = filtered_data.head(50)
-        print(f"🤖 Sending top 50 to AI...")
+        print(f"AI PIPELINE -> Sending top 50 to AI...")
 
         matching_text = (matching_movies['id'].astype(str) + " - " +
                          matching_movies["overview"]).str.cat(sep="\n")
@@ -136,10 +136,10 @@ def recommend_movies(request_json, previous_ids=None):
         ai_response = llm.invoke(ai_prompt).content
         ids = get_ids(ai_response)
 
-        print(f"  AI returned: {ids}")
+        print(f"AI RESPONSE -> returned: {ids}")
 
         result = ids_to_json(ids, matching_movies)
-        print(f"✅ Returning {len(result['recommended_movies'])} recommendations\n")
+        print(f"RESPONSE -> Returning {len(result['recommended_movies'])} recommendations\n")
 
         return result
 
@@ -178,9 +178,7 @@ def recommend_movies(request_json, previous_ids=None):
 
         gc.collect()
 
-# -------------------------------------------------------------------------
-# Quick test
-# -------------------------------------------------------------------------
+# TEST ON MAIN
 if __name__ == "__main__":
     test_json = {
         "mood": "excited",
@@ -193,5 +191,5 @@ if __name__ == "__main__":
     }
 
     result = recommend_movies(test_json, [25, 227])
-    print("\n📋 Final result:")
+    print("\n TEST RESULT ->")
     print(json.dumps(result, indent=2))
