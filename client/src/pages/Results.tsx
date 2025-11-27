@@ -148,7 +148,7 @@ const Results = () => {
   const handleGetNewRecommendations = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch("http://localhost:8000/recommend", {
+      const response = await fetch("http://rec-movie.onrender.com/recommend", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

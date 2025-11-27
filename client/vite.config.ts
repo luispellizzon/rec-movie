@@ -5,13 +5,9 @@ import path from "path"
 
 
 export default defineConfig(({ mode }) => {
-  const env = loadEnv(mode, process.cwd());
-
-  const BASE_URL = `${env.VITE_NODE_ENV ? "/rec-movie/" : "/"}`;
-
   return {
     plugins: [react(), tailwindcss()],
-    base: BASE_URL,
+    base: mode === "production" ? "/rec-movie/" : "/",
     build: {
       outDir: 'dist',
       assetsDir: 'assets'
