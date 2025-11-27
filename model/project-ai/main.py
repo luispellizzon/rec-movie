@@ -128,6 +128,8 @@ def recommend_movies(request_json, previous_ids=None):
             f"Output exactly {number_recommended} movies\n"
             f"Output ONLY movie IDs, no text\n"
             f"Choose ONLY from provided list\n\n"
+            f"Output example: 123 4123 10 231 123\n"
+            f"Do not put any punctuation or any other bit of text in the output.\n"
             f"User Preferences:\n{json.dumps(request_json, indent=2)}"
             f"\nMovies List:\n{matching_text}"
         )
