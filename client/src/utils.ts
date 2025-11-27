@@ -62,17 +62,29 @@ export const parseMovie = (content: string, id: number) => {
     const directorMatch = content.match(/Director:\s*(.*?)\./s);
     const countriesMatch = content.match(/Countries:\s*(.*?)\./s);
 
-    // allow decimals ending with a dot → "8.30." or "5.86."
     const popularityMatch = content.match(/Popularity:\s*([0-9]+(?:\.[0-9]+)?)/);
     const ratingMatch = content.match(/Rating:\s*([0-9]+(?:\.[0-9]+)?)/);
 
     const posterMatch = content.match(/Poster:\s*(https:\/\/.*)$/m);
 
+    function parsePythonList(text: string | undefined): string[] {
+        if (!text) return [];
+        try {
+            const json = text
+                .replace(/'/g, '"')   // convert Python to JSON
+                .trim();
+            return JSON.parse(json);
+        } catch {
+            return [];
+        }
+    }
+    // ---------------------------------------------------
+
     return {
         id,
         title: titleMatch?.[1]?.trim() ?? "Unknown",
         description: overviewMatch?.[1]?.trim() ?? "",
-        genres: genresMatch ? genresMatch[1].split(",").map((g) => g.trim()) : [],
+        genres: parsePythonList(genresMatch?.[1]),
         year: yearMatch ? Number(yearMatch[1]) : null,
         duration: runtimeMatch ? Number(runtimeMatch[1]) : null,
         language: languageMatch ? languageMatch[1] : "",
@@ -80,6 +92,7 @@ export const parseMovie = (content: string, id: number) => {
         rating: ratingMatch ? Number(ratingMatch[1]) : null,
         poster: posterMatch ? posterMatch[1] : "",
         director: directorMatch ? directorMatch[1] : "",
-        countries: countriesMatch ? countriesMatch[1].split(",").map((g) => g.trim()) : [],
+        countries: parsePythonList(countriesMatch?.[1]),
     };
-}
+};
+
