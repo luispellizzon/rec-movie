@@ -5,7 +5,8 @@ import sqlite3
 import pandas as pd
 from langchain_google_genai import ChatGoogleGenerativeAI
 from dotenv import load_dotenv
-import ast
+from filter_utils import filter_dataframe
+from sql_utils import build_sql_query
 
 load_dotenv()
 
@@ -26,155 +27,6 @@ llm = ChatGoogleGenerativeAI(
     temperature=0.3,
     api_key=GOOGLE_API_KEY
 )
-
-
-# -------------------------------------------------------------------------
-# SAFE LIST PARSING (Guaranteed list[str])
-# -------------------------------------------------------------------------
-def safe_parse_list(x):
-    """Ultra-safe parsing - guarantees the output is always a list of strings."""
-
-    # Handle null / NaN / floats safely
-    if x is None:
-        return []
-    if isinstance(x, float):
-        if pd.isna(x):
-            return []
-        return []  # floats are always invalid in this dataset
-
-    # Already a list
-    if isinstance(x, list):
-        return [str(item) for item in x if item is not None]
-
-    # Parse JSON-like strings
-    if isinstance(x, str):
-        x = x.strip()
-        if not x:
-            return []
-        try:
-            result = ast.literal_eval(x)
-            if isinstance(result, list):
-                return [str(item) for item in result if item is not None]
-            return []
-        except:
-            return []
-
-    return []
-
-
-# -------------------------------------------------------------------------
-# FILTER DATAFRAME (now 100% float-proof)
-# -------------------------------------------------------------------------
-def filter_dataframe(df, mood=None, mainstream=True, selected_genres=None, country=None):
-    if df.empty:
-        return df
-
-    filtered = df.copy()
-
-    print(f"  Parsing {len(filtered)} movies...")
-
-    # Parse and force lists
-    filtered["genres"] = filtered["genres"].astype(object)
-    filtered["genres"] = filtered["genres"].apply(safe_parse_list)
-
-    filtered["production_countries"] = filtered["production_countries"].astype(object)
-    filtered["production_countries"] = filtered["production_countries"].apply(safe_parse_list)
-
-    # Remove any row where genres isn't a list
-    filtered = filtered[filtered["genres"].apply(lambda g: isinstance(g, list))]
-
-    # Remove empty lists
-    filtered = filtered[filtered["genres"].apply(lambda g: len(g) > 0)]
-
-    print(f"  After parsing: {len(filtered)} movies (valid lists)")
-
-    # Mood → genres
-    mood_to_genres = {
-        "happy": ["Comedy", "Romance", "Family", "Adventure"],
-        "sad": ["Drama", "Romance"],
-        "excited": ["Action", "Adventure", "Thriller", "Science Fiction"],
-        "relaxed": ["Romance", "Comedy", "Family", "Music"],
-        "adventurous": ["Adventure", "Action", "Fantasy"],
-        "romantic": ["Romance", "Drama"],
-        "scared": ["Horror", "Thriller", "Mystery"],
-        "thoughtful": ["Drama", "History", "Mystery"],
-        "energetic": ["Action", "Adventure"],
-        "melancholic": ["Drama", "Music", "Romance"]
-    }
-
-    wanted_genres = set()
-    if mood and mood in mood_to_genres:
-        wanted_genres.update(mood_to_genres[mood])
-    if selected_genres:
-        wanted_genres.update(selected_genres)
-
-    # Genre filter
-    if wanted_genres:
-        print(f"  Filtering by genres: {wanted_genres}")
-
-        def match_genres(g):
-            if not isinstance(g, list):
-                return False
-            if not all(isinstance(item, str) for item in g):
-                return False
-            return bool(set(g) & wanted_genres)
-
-        filtered = filtered[filtered["genres"].apply(match_genres)]
-        print(f"  After genre filter: {len(filtered)} movies")
-
-    # Country filter
-    if country:
-        filtered = filtered[filtered["production_countries"].apply(lambda c: country in c)]
-        print(f"  After country filter: {len(filtered)} movies")
-
-    # Popularity filter
-    if "popularity" in filtered.columns and not filtered.empty:
-        if mainstream:
-            threshold = filtered["popularity"].quantile(0.7)
-            filtered = filtered[filtered["popularity"] >= threshold]
-        else:
-            threshold = filtered["popularity"].quantile(0.3)
-            filtered = filtered[filtered["popularity"] <= threshold]
-
-        print(f"  After popularity filter: {len(filtered)} movies")
-
-    return filtered
-
-
-# -------------------------------------------------------------------------
-# SUPPORT FUNCTIONS
-# -------------------------------------------------------------------------
-def build_sql_query(preferred_length=None, language=None, era=None, previous_ids=None):
-    query = ("SELECT id, title, overview, genres, production_countries, popularity, "
-             "imdb_rating, runtime, year, original_language, director, poster_path, release_date "
-             "FROM movies WHERE 1=1")
-    params = []
-
-    if preferred_length:
-        tolerance = 20
-        min_time = max(0, preferred_length - tolerance)
-        max_time = preferred_length + tolerance
-        query += " AND runtime BETWEEN ? AND ?"
-        params.extend([min_time, max_time])
-
-    if language:
-        query += " AND original_language = ?"
-        params.append(language)
-
-    if era == "old":
-        query += " AND year <= 1990"
-    elif era == "actual":
-        query += " AND year > 1990 AND year <= 2020"
-    elif era == "new":
-        query += " AND year > 2020"
-
-    if previous_ids and len(previous_ids) > 0:
-        placeholders = ','.join('?' * len(previous_ids))
-        query += f" AND id NOT IN ({placeholders})"
-        params.extend(previous_ids)
-
-    query += " ORDER BY popularity DESC, imdb_rating DESC"
-    return query, params
 
 
 def get_ids(response: str):
@@ -237,7 +89,6 @@ def recommend_movies(request_json, previous_ids=None):
         print(f"📊 SQL query...")
         data_chunk = pd.read_sql_query(query, conn, params=params)
 
-        # FORCE pandas to stop upcasting genres/countries to float (important!)
         data_chunk["genres"] = data_chunk["genres"].astype(object)
         data_chunk["production_countries"] = data_chunk["production_countries"].astype(object)
 
