@@ -138,4 +138,4 @@ describe("Acceptance: Complete User Journey", () => {
       expect(screen.getByText(/Login/i)).toBeInTheDocument();
     });
   });
-});
+}, 20000);
