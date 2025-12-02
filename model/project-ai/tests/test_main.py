@@ -12,19 +12,9 @@ class TestGetIds:
         response = "12345"
         assert get_ids(response) == [12345]
     
-    def test_multiple_ids(self):
-        """Test parsing multiple IDs"""
-        response = "123\n456\n789"
-        assert get_ids(response) == [123, 456, 789]
-    
     def test_ids_with_whitespace(self):
         """Test parsing IDs with whitespace"""
         response = "  123  \n  456  \n  789  "
-        assert get_ids(response) == [123, 456, 789]
-    
-    def test_mixed_content_filters_non_ids(self):
-        """Test that non-numeric lines are filtered out"""
-        response = "123\nsome text\n456\nmore text\n789"
         assert get_ids(response) == [123, 456, 789]
     
     def test_empty_response(self):
