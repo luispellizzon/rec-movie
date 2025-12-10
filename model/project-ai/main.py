@@ -3,17 +3,22 @@ import os
 import json
 import sqlite3
 import pandas as pd
-from langchain_google_genai import ChatGoogleGenerativeAI
+# from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_openai import ChatOpenAI
 from dotenv import load_dotenv
 from filter_utils import filter_dataframe
 from sql_utils import build_sql_query
 import gc
 
 load_dotenv()
+# CHANGE GOOGLE GEMINI TO OPEN AI
+# GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
+# if not GOOGLE_API_KEY:
+#     raise ValueError("GOOGLE_API_KEY environment variable not set")
 
-GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
-if not GOOGLE_API_KEY:
-    raise ValueError("GOOGLE_API_KEY environment variable not set")
+OPEN_AI_KEY = os.getenv("OPEN_AI_KEY")
+if not OPEN_AI_KEY:
+    raise ValueError("OPEN_AI_KEY environment variable not set")
 
 DB_PATH = "datasets/movie_dataset.db"
 if not os.path.exists(DB_PATH):
@@ -23,10 +28,16 @@ print("Connecting to database...")
 conn = sqlite3.connect(DB_PATH, check_same_thread=False)
 print("DB -> Database connected!")
 
-llm = ChatGoogleGenerativeAI(
-    model="gemini-2.0-flash-lite",
+# llm = ChatGoogleGenerativeAI(
+#     model="gemini-2.0-flash-lite",
+#     temperature=0.3,
+#     api_key=GOOGLE_API_KEY
+# )
+
+llm = ChatOpenAI(
+    model="gpt-4.1-mini",
     temperature=0.3,
-    api_key=GOOGLE_API_KEY
+    api_key=OPEN_AI_KEY
 )
 
 
